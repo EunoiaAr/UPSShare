@@ -1,10 +1,10 @@
 ﻿using System.ServiceProcess;
 
-namespace UPSShare.Slave
+namespace UPSShare.Master
 {
-    public partial class Service1 : ServiceBase
+    public partial class MasterService : ServiceBase
     {
-        public Service1()
+        public MasterService()
         {
             InitializeComponent();
         }
