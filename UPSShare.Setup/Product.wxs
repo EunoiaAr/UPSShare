@@ -1,30 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Id="*" Name="UPSShare.Setup" Language="1033" Version="1.0.0.0" Manufacturer="" UpgradeCode="f614d955-e5f9-45fc-b0f7-1078bb4689f1">
-		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+  <?include Vars.wxi ?>
+  <Product Id="*"
+           Name="$(var.ProductName)"
+           Codepage="utf-8"
+           Language="1033"
+           Version="$(fun.AutoVersion(1.0))"
+           Manufacturer="$(var.Manufacturer)"
+           UpgradeCode="$(var.UpgradeCode)">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
-		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
-		<MediaTemplate />
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate />
 
-		<Feature Id="ProductFeature" Title="UPSShare.Setup" Level="1">
-			<ComponentGroupRef Id="ProductComponents" />
-		</Feature>
-	</Product>
+    <Feature Id="UPSShareMaster"
+             Title="UPS Share Master Service" Level="1">
+      <ComponentGroupRef Id="UPSShare.Master" />
+    </Feature>
+    <Feature Id="UPSShareSlave"
+             Title="UPS Share Slave Service" Level="1">
+      <ComponentGroupRef Id="UPSShare.Slave" />
+    </Feature>
+  </Product>
 
-	<Fragment>
-		<Directory Id="TARGETDIR" Name="SourceDir">
-			<Directory Id="ProgramFilesFolder">
-				<Directory Id="INSTALLFOLDER" Name="UPSShare.Setup" />
-			</Directory>
-		</Directory>
-	</Fragment>
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="$(var.Manufacturer)" />
+      </Directory>
+    </Directory>
+  </Fragment>
 
-	<Fragment>
-		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
-			<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
-			<!-- <Component Id="ProductComponent"> -->
-				<!-- TODO: Insert files, registry keys, and other resources here. -->
-			<!-- </Component> -->
-		</ComponentGroup>
-	</Fragment>
+  <Fragment>
+    <ComponentGroup Id="UPSShare.Master" Directory="INSTALLFOLDER">
+      <Component Id="UPSShare.Master.Service">
+        <File Id="UPSShareMasterExe" Name="UPSShare.Master.exe" Source="$(var.UPSShare.Master.TargetPath)" KeyPath="yes" Vital="yes" DiskId="1" />
+      </Component>
+    </ComponentGroup>
+    <ComponentGroup Id="UPSShare.Slave" Directory="INSTALLFOLDER">
+      <Component Id="UPSShare.Slave.Service">
+        <File Id="UPSShareSlaveExe" Name="UPSShare.Slave.exe" Source="$(var.UPSShare.Slave.TargetPath)" KeyPath="yes" Vital="yes" DiskId="1" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
 </Wix>
