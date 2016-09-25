@@ -35,11 +35,13 @@
     <ComponentGroup Id="UPSShare.Master" Directory="INSTALLFOLDER">
       <Component Id="UPSShare.Master.Service">
         <File Id="UPSShareMasterExe" Name="UPSShare.Master.exe" Source="$(var.UPSShare.Master.TargetPath)" KeyPath="yes" Vital="yes" DiskId="1" />
+        <File Id="UPSShareMasterConfig" Name="UPSShare.Master.exe.config" Source="$(var.UPSShare.Master.TargetDir)$(var.UPSShare.Master.TargetFileName).config" KeyPath="no" Vital="yes" DiskId="1" />
       </Component>
     </ComponentGroup>
     <ComponentGroup Id="UPSShare.Slave" Directory="INSTALLFOLDER">
       <Component Id="UPSShare.Slave.Service">
         <File Id="UPSShareSlaveExe" Name="UPSShare.Slave.exe" Source="$(var.UPSShare.Slave.TargetPath)" KeyPath="yes" Vital="yes" DiskId="1" />
+        <File Id="UPSShareSlaveConfig" Name="UPSShare.Slave.exe.config" Source="$(var.UPSShare.Slave.TargetDir)$(var.UPSShare.Slave.TargetFileName).config" KeyPath="no" Vital="yes" DiskId="1" />
       </Component>
     </ComponentGroup>
   </Fragment>
