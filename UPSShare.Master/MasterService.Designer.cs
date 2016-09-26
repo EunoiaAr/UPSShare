@@ -27,8 +27,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
+            // 
+            // MasterService
+            // 
+            this.CanHandlePowerEvent = true;
             this.ServiceName = "UPS Share Master Service";
+
         }
 
         #endregion
