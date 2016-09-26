@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Bundle Name="UPSShare" Version="1.0.0.0" Manufacturer="Eugenio Miró" UpgradeCode="7910b259-5c93-44da-8c20-a88000a81e82">
+    <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.RtfLicense" />
+
+    <Chain>
+      <PackageGroupRef Id="NetFx452Web"/>
+      <MsiPackage Id="UPSShare" SourceFile="$(var.UPSShare.Setup.TargetPath)"/>
+    </Chain>
+  </Bundle>
+</Wix>
