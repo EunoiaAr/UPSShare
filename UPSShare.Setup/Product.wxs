@@ -39,15 +39,30 @@
 
   <Fragment>
     <ComponentGroup Id="UPSShare.Master" Directory="INSTALLFOLDER">
-      <Component Id="UPSShare.Master.Service">
-        <File Id="UPSShareMasterExe" Name="UPSShare.Master.exe" Source="$(var.UPSShare.Master.TargetPath)" KeyPath="yes" Vital="yes" DiskId="1" />
+      <Component Id="UPSShare.Master.Service" Guid="{35C0556C-A1A4-4DBC-934F-8C6C7A4B059A}">
+        <File Id="UPSShareMasterExe"    Name="UPSShare.Master.exe"        Source="$(var.UPSShare.Master.TargetPath)"                  KeyPath="yes" Vital="yes" DiskId="1" />
         <File Id="UPSShareMasterConfig" Name="UPSShare.Master.exe.config" Source="$(var.UPSShare.Master.TargetDir)$(var.UPSShare.Master.TargetFileName).config" KeyPath="no" Vital="yes" DiskId="1" />
+        <File Id="MicrosoftOwindll"     Name="Microsoft.Owin.dll"         Source="$(var.UPSShare.Master.TargetDir)Microsoft.Owin.dll" KeyPath="no" Vital="yes" DiskId="1" />
+        <File Id="MicrosoftOwinxml"     Name="Microsoft.Owin.xml"         Source="$(var.UPSShare.Master.TargetDir)Microsoft.Owin.xml" KeyPath="no" Vital="yes" DiskId="1" />
+        <File Id="MicrosoftOwinHostHttpListenerdll" Name="Microsoft.Owin.Host.HttpListener.dll" Source="$(var.UPSShare.Master.TargetDir)Microsoft.Owin.Host.HttpListener.dll" KeyPath="no" Vital="yes" DiskId="1" />
+        <File Id="MicrosoftOwinHostHttpListenerxml" Name="Microsoft.Owin.Host.HttpListener.xml" Source="$(var.UPSShare.Master.TargetDir)Microsoft.Owin.Host.HttpListener.xml" KeyPath="no" Vital="yes" DiskId="1" />
+        <File Id="MicrosoftOwinHostingdll" Name="Microsoft.Owin.Hosting.dll" Source="$(var.UPSShare.Master.TargetDir)Microsoft.Owin.Hosting.dll" KeyPath="no" Vital="yes" DiskId="1" />
+        <File Id="MicrosoftOwinHostingxml" Name="Microsoft.Owin.Hosting.xml" Source="$(var.UPSShare.Master.TargetDir)Microsoft.Owin.Hosting.xml" KeyPath="no" Vital="yes" DiskId="1" />
+        <File Id="NewtonsoftJsondll"    Name="Newtonsoft.Json.dll"        Source="$(var.UPSShare.Master.TargetDir)Newtonsoft.Json.dll" KeyPath="no" Vital="yes" DiskId="1" />
+        <File Id="NewtonsoftJsonxml"    Name="Newtonsoft.Json.xml"        Source="$(var.UPSShare.Master.TargetDir)Newtonsoft.Json.xml" KeyPath="no" Vital="yes" DiskId="1" />
+        <File Id="Owindll"              Name="Owin.dll"                   Source="$(var.UPSShare.Master.TargetDir)Owin.dll"           KeyPath="no" Vital="yes" DiskId="1" />
+        <File Id="SystemNetHttpFormattingdll" Name="System.Net.Http.Formatting.dll" Source="$(var.UPSShare.Master.TargetDir)System.Net.Http.Formatting.dll" KeyPath="no" Vital="yes" DiskId="1" />
+        <File Id="SystemNetHttpFormattingxml" Name="System.Net.Http.Formatting.xml" Source="$(var.UPSShare.Master.TargetDir)System.Net.Http.Formatting.xml" KeyPath="no" Vital="yes" DiskId="1" />
+        <File Id="SystemWebHttpdll"     Name="System.Web.Http.dll"        Source="$(var.UPSShare.Master.TargetDir)System.Web.Http.dll" KeyPath="no" Vital="yes" DiskId="1" />
+        <File Id="SystemWebHttpxml"     Name="System.Web.Http.xml"        Source="$(var.UPSShare.Master.TargetDir)System.Web.Http.xml" KeyPath="no" Vital="yes" DiskId="1" />
+        <File Id="SystemWebHttpOwindll" Name="System.Web.Http.Owin.dll"   Source="$(var.UPSShare.Master.TargetDir)System.Web.Http.Owin.dll" KeyPath="no" Vital="yes" DiskId="1" />
+        <File Id="SystemWebHttpOwinxml" Name="System.Web.Http.Owin.xml"   Source="$(var.UPSShare.Master.TargetDir)System.Web.Http.Owin.xml" KeyPath="no" Vital="yes" DiskId="1" />
       </Component>
     </ComponentGroup>
     <ComponentGroup Id="UPSShare.Slave" Directory="INSTALLFOLDER">
-      <Component Id="UPSShare.Slave.Service">
-        <File Id="UPSShareSlaveExe" Name="UPSShare.Slave.exe" Source="$(var.UPSShare.Slave.TargetPath)" KeyPath="yes" Vital="yes" DiskId="1" />
-        <File Id="UPSShareSlaveConfig" Name="UPSShare.Slave.exe.config" Source="$(var.UPSShare.Slave.TargetDir)$(var.UPSShare.Slave.TargetFileName).config" KeyPath="no" Vital="yes" DiskId="1" />
+      <Component Id="UPSShare.Slave.Service" Guid="{BDF1BD4F-5DE0-44E8-B099-65E871AA8144}">
+        <File Id="UPSShareSlaveExe"     Name="UPSShare.Slave.exe"         Source="$(var.UPSShare.Slave.TargetPath)"   KeyPath="yes" Vital="yes" DiskId="1" />
+        <File Id="UPSShareSlaveConfig"  Name="UPSShare.Slave.exe.config"  Source="$(var.UPSShare.Slave.TargetDir)$(var.UPSShare.Slave.TargetFileName).config" KeyPath="no" Vital="yes" DiskId="1" />
       </Component>
     </ComponentGroup>
   </Fragment>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
      xmlns:bal="http://schemas.microsoft.com/wix/BalExtension">
-  <Bundle Name="UPSShare" Version="1.0.0.0" Manufacturer="Eugenio Miró" UpgradeCode="7910b259-5c93-44da-8c20-a88000a81e82">
+  <Bundle Name="UPSShare" Version="0.2.0.0" Manufacturer="Eugenio Miró" UpgradeCode="7910b259-5c93-44da-8c20-a88000a81e82">
     <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.HyperlinkLicense">
       <bal:WixStandardBootstrapperApplication LicenseUrl="https://github.com/EunoiaAr/UPSShare/blob/master/LICENSE.txt"/>
     </BootstrapperApplicationRef>
