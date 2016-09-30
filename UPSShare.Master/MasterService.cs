@@ -1,4 +1,7 @@
-﻿using System.ServiceProcess;
+﻿using System;
+using System.Configuration;
+using System.ServiceProcess;
+using Microsoft.Owin.Hosting;
 
 namespace UPSShare.Master
 {
@@ -7,14 +10,19 @@ namespace UPSShare.Master
         public MasterService()
         {
             InitializeComponent();
+            BaseAddress = ConfigurationManager.AppSettings["baseAddress"] ?? "http://localhost:8080";
         }
+
+        public string BaseAddress { get; private set; }
 
         protected override void OnStart(string[] args)
         {
+            _webApi = WebApp.Start<WebApi.Startup>(url: BaseAddress);
         }
 
         protected override void OnStop()
         {
+            _webApi.Dispose();
         }
 
         protected override bool OnPowerEvent(PowerBroadcastStatus powerStatus)
@@ -43,5 +51,7 @@ namespace UPSShare.Master
             }
             return base.OnPowerEvent(powerStatus);
         }
+
+        private IDisposable _webApi;
     }
 }
