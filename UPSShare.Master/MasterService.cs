@@ -53,6 +53,6 @@ namespace UPSShare.Master
             return base.OnPowerEvent(powerStatus);
         }
 
-        private IDisposable _webApi;
+        IDisposable _webApi;
     }
 }

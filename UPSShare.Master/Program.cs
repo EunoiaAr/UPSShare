@@ -10,8 +10,7 @@ namespace UPSShare.Master
         static void Main()
         {
             ServiceBase[] ServicesToRun;
-            ServicesToRun = new ServiceBase[]
-            {
+            ServicesToRun = new ServiceBase[] {
                 new MasterService()
             };
             ServiceBase.Run(ServicesToRun);
