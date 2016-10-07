@@ -1,4 +1,6 @@
-﻿using System.ServiceProcess;
+﻿using System;
+using System.ServiceProcess;
+using CommandLine;
 
 namespace UPSShare.Master
 {
@@ -7,13 +9,25 @@ namespace UPSShare.Master
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
-        static void Main()
+        static void Main(string[] args)
         {
-            ServiceBase[] ServicesToRun;
-            ServicesToRun = new ServiceBase[] {
-                new MasterService()
-            };
-            ServiceBase.Run(ServicesToRun);
+            var options = new Options();
+            if (!Parser.Default.ParseArguments(args, options)) {
+                Console.WriteLine("error command line");
+            }
+            var service = new MasterService();
+            if (!options.AsCommand) {
+                ServiceBase[] ServicesToRun;
+                    ServicesToRun = new ServiceBase[] {
+                    service
+                };
+                ServiceBase.Run(ServicesToRun);
+            }else {
+                service.Start(null);
+                Console.WriteLine("Press <ENTER> to finish");
+                Console.ReadLine();
+                service.Stop();
+            }
         }
     }
 }

@@ -17,13 +17,18 @@ namespace UPSShare.Master
 
         protected override void OnStart(string[] args)
         {
-            // see: http://www.asp.net/web-api/overview/hosting-aspnet-web-api/use-owin-to-self-host-web-api
-            _webApi = WebApp.Start<WebApi.Startup>(url: BaseAddress);
+            Start(args);
         }
 
         protected override void OnStop()
         {
             _webApi.Dispose();
+        }
+
+        internal void Start(string[] args)
+        {
+            // see: http://www.asp.net/web-api/overview/hosting-aspnet-web-api/use-owin-to-self-host-web-api
+            _webApi = WebApp.Start<WebApi.Startup>(url: BaseAddress);
         }
 
         protected override bool OnPowerEvent(PowerBroadcastStatus powerStatus)
