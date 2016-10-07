@@ -8,6 +8,7 @@ using Owin;
 
 namespace UPSShare.Master.WebApi
 {
+    using System.Net.WebSockets;
     // see: http://aspnet.codeplex.com/sourcecontrol/latest#Samples/Katana/WebSocketSample/WebSocketServer/Startup.cs
     using WebSocketAccept = Action<IDictionary<string, object>, Func<IDictionary<string, object>, Task>>;
     using WebSocketCloseAsync = Func<int, string, CancellationToken, Task>;
@@ -36,36 +37,53 @@ namespace UPSShare.Master.WebApi
         Task UpgradeToWebSockets(IOwinContext context, Func<Task> next)
         {
             WebSocketAccept accept = context.Get<WebSocketAccept>("websocket.Accept");
-            if (accept == null)
+            if (accept == null || context.Request.Path.Value != "/ws")
             {
                 // Not a websocket request
                 return next();
             }
 
-            accept(null, WebSocketEcho);
+            accept(null, WebSocketPushUPSShare);
 
             return Task.FromResult<object>(null);
-
         }
 
-        async Task WebSocketEcho(IDictionary<string, object> websocketContext)
+        async Task WebSocketPushUPSShare(IDictionary<string, object> websocketContext)
         {
-            var sendAsync       = (WebSocketSendAsync)   websocketContext["websocket.SendAsync"];
-            var receiveAsync    = (WebSocketReceiveAsync)websocketContext["websocket.ReceiveAsync"];
-            var closeAsync      = (WebSocketCloseAsync)  websocketContext["websocket.CloseAsync"];
-            var callCancelled   = (CancellationToken)    websocketContext["websocket.CallCancelled"];
-            var buffer          = new byte[1024];
-            var received        = await receiveAsync(new ArraySegment<byte>(buffer), callCancelled);
-            object status;
+            Console.WriteLine("client connected");
+            string clientKey = String.Empty;
+            try {
+                var webSocketsContext   = (HttpListenerWebSocketContext)    websocketContext["System.Net.WebSockets.WebSocketContext"];
+                clientKey               = webSocketsContext.SecWebSocketKey;
 
-            while (!websocketContext.TryGetValue("websocket.ClientCloseStatus", out status) || (int) status == 0) {
-                // Echo anything we receive
-                await sendAsync(new ArraySegment<byte>(buffer, 0, received.Item3), received.Item1, received.Item2, callCancelled);
+                Console.WriteLine($"Client SecWebSocketKey = {clientKey}");
 
-                received = await receiveAsync(new ArraySegment<byte>(buffer), callCancelled);
+                var sendAsync           = (WebSocketSendAsync)              websocketContext["websocket.SendAsync"];
+                var receiveAsync        = (WebSocketReceiveAsync)           websocketContext["websocket.ReceiveAsync"];
+                var closeAsync          = (WebSocketCloseAsync)             websocketContext["websocket.CloseAsync"];
+                var callCancelled       = (CancellationToken)               websocketContext["websocket.CallCancelled"];
+                var buffer              = new byte[1024];
+                var received            = await receiveAsync(new ArraySegment<byte>(buffer), callCancelled);
+                object status;
+
+                while (!websocketContext.TryGetValue("websocket.ClientCloseStatus", out status) || (int) status == 0) {
+                    // Echo anything we receive
+                    var type            = received.Item1;
+                    var endOfMessage    = received.Item2;
+                    var count           = received.Item3;
+
+                    await sendAsync(new ArraySegment<byte>(buffer, 0, count), type, endOfMessage, callCancelled);
+
+                    received = await receiveAsync(new ArraySegment<byte>(buffer), callCancelled);
+                }
+                object clientCloseDescription;
+                websocketContext.TryGetValue("websocket.ClientCloseDescription", out clientCloseDescription);
+                Console.WriteLine($"Client ended connection with status {(WebSocketCloseStatus) status} and description {clientCloseDescription}. disconnecting client");
+
+                await closeAsync((int) status, (string) clientCloseDescription, callCancelled);
+            } finally {
+                Console.WriteLine($"client {clientKey} disconnected");
             }
-
-            await closeAsync((int) websocketContext["websocket.ClientCloseStatus"], (string) websocketContext["websocket.ClientCloseDescription"], callCancelled);
         }
     }
 }

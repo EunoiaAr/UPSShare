@@ -10,7 +10,7 @@ namespace UPSShare.Master
         public MasterService()
         {
             InitializeComponent();
-            BaseAddress = ConfigurationManager.AppSettings["baseAddress"] ?? "http://localhost:8080";
+            BaseAddress = ConfigurationManager.AppSettings["baseAddress"] ?? "http://*:5000";
         }
 
         public string BaseAddress { get; private set; }
