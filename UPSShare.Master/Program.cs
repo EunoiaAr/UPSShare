@@ -17,12 +17,11 @@ namespace UPSShare.Master
             }
             var service = new MasterService();
             if (!options.AsCommand) {
-                ServiceBase[] ServicesToRun;
-                    ServicesToRun = new ServiceBase[] {
+                ServiceBase[] ServicesToRun = new ServiceBase[] {
                     service
                 };
                 ServiceBase.Run(ServicesToRun);
-            }else {
+            } else {
                 service.Start(null);
                 Console.WriteLine("Press <ENTER> to finish");
                 Console.ReadLine();

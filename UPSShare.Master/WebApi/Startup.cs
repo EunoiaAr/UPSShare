@@ -37,8 +37,7 @@ namespace UPSShare.Master.WebApi
         Task UpgradeToWebSockets(IOwinContext context, Func<Task> next)
         {
             WebSocketAccept accept = context.Get<WebSocketAccept>("websocket.Accept");
-            if (accept == null || context.Request.Path.Value != "/ws")
-            {
+            if (accept == null || context.Request.Path.Value != "/ws") {
                 // Not a websocket request
                 return next();
             }

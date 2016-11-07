@@ -9,9 +9,7 @@ namespace UPSShare.Slave
         /// </summary>
         static void Main()
         {
-            ServiceBase[] ServicesToRun;
-            ServicesToRun = new ServiceBase[]
-            {
+            ServiceBase[] ServicesToRun = new ServiceBase[] {
                 new SlaveService()
             };
             ServiceBase.Run(ServicesToRun);
