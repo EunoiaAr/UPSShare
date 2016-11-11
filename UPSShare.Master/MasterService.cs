@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.ServiceProcess;
+using log4net;
 using Microsoft.Owin.Hosting;
 
 namespace UPSShare.Master
@@ -17,22 +18,27 @@ namespace UPSShare.Master
 
         protected override void OnStart(string[] args)
         {
+            _log.Debug("Starting UPS Master ");
             Start(args);
         }
 
         protected override void OnStop()
         {
             _webApi.Dispose();
+            _log.Debug("Stopping UPS Master ");
         }
 
         internal void Start(string[] args)
         {
             // see: http://www.asp.net/web-api/overview/hosting-aspnet-web-api/use-owin-to-self-host-web-api
             _webApi = WebApp.Start<WebApi.Startup>(url: BaseAddress);
+            _log.Debug($"Starting WebAPi on '{BaseAddress}'");
+
         }
 
         protected override bool OnPowerEvent(PowerBroadcastStatus powerStatus)
         {
+            _log.Debug($"OnPowerStatus '{powerStatus}'");
             switch (powerStatus) {
                 case PowerBroadcastStatus.BatteryLow:
                     break;
@@ -59,5 +65,6 @@ namespace UPSShare.Master
         }
 
         IDisposable _webApi;
+        ILog        _log    = LogManager.GetLogger(typeof(MasterService));
     }
 }

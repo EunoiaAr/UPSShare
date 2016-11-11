@@ -101,6 +101,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="log4net.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +110,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy $(ProjectDir)log4net.config $(TargetDir)
+echo copy $(ProjectDir)log4net.config $(TargetDir)</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
