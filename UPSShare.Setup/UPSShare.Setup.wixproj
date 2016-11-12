@@ -21,7 +21,11 @@
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Directory.wxs" />
+    <Compile Include="Master.wxs" />
     <Compile Include="Product.wxs" />
+    <Compile Include="Slave.wxs" />
+    <Compile Include="UI.wxs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\UPSShare.Master\UPSShare.Master.csproj">

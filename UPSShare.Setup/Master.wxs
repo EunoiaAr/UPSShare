@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+    <ComponentGroup Id="UPSShare.Master" Directory="INSTALLFOLDER">
+      <Component Id="UPSShare.Master.Service" Guid="{35C0556C-A1A4-4DBC-934F-8C6C7A4B059A}">
+        <File Id="CommandLinedll"       Name="CommandLine.dll"            Source="$(var.UPSShare.Master.TargetDir)CommandLine.dll"      KeyPath="no" Vital="yes" DiskId="1" />
+        <File Id="log4netdll"           Name="log4net.dll"                Source="$(var.UPSShare.Master.TargetDir)log4net.dll"          KeyPath="no" Vital="yes" DiskId="1" />
+        <File Id="MicrosoftOwindll"     Name="Microsoft.Owin.dll"         Source="$(var.UPSShare.Master.TargetDir)Microsoft.Owin.dll"   KeyPath="no" Vital="yes" DiskId="1" />
+        <File Id="MicrosoftOwinHostHttpListenerdll" Name="Microsoft.Owin.Host.HttpListener.dll" Source="$(var.UPSShare.Master.TargetDir)Microsoft.Owin.Host.HttpListener.dll" KeyPath="no" Vital="yes" DiskId="1" />
+        <File Id="MicrosoftOwinHostingdll" Name="Microsoft.Owin.Hosting.dll" Source="$(var.UPSShare.Master.TargetDir)Microsoft.Owin.Hosting.dll" KeyPath="no" Vital="yes" DiskId="1" />
+        <File Id="NewtonsoftJsondll"    Name="Newtonsoft.Json.dll"        Source="$(var.UPSShare.Master.TargetDir)Newtonsoft.Json.dll"  KeyPath="no" Vital="yes" DiskId="1" />
+        <File Id="Owindll"              Name="Owin.dll"                   Source="$(var.UPSShare.Master.TargetDir)Owin.dll"             KeyPath="no" Vital="yes" DiskId="1" />
+        <File Id="SystemNetHttpFormattingdll" Name="System.Net.Http.Formatting.dll" Source="$(var.UPSShare.Master.TargetDir)System.Net.Http.Formatting.dll" KeyPath="no" Vital="yes" DiskId="1" />
+        <File Id="SystemWebHttpdll"     Name="System.Web.Http.dll"        Source="$(var.UPSShare.Master.TargetDir)System.Web.Http.dll"  KeyPath="no" Vital="yes" DiskId="1" />
+        <File Id="SystemWebHttpOwindll" Name="System.Web.Http.Owin.dll"   Source="$(var.UPSShare.Master.TargetDir)System.Web.Http.Owin.dll" KeyPath="no" Vital="yes" DiskId="1" />
+        <File Id="UPSShareMasterExe"    Name="UPSShare.Master.exe"        Source="$(var.UPSShare.Master.TargetPath)"                    KeyPath="yes" Vital="yes" DiskId="1" />
+        <File Id="UPSShareMasterConfig" Name="UPSShare.Master.exe.config" Source="$(var.UPSShare.Master.TargetDir)$(var.UPSShare.Master.TargetFileName).config" KeyPath="no" Vital="yes" DiskId="1" />
+        <File Id="log4netConfig"        Name="log4net.config"             Source="$(var.UPSShare.Master.TargetDir)log4net.config"       KeyPath="no" Vital="yes" DiskId="1" />
+        <ServiceInstall Id="InstallMasterService" Type="ownProcess" Vital="yes" Name="UPSShare.Master"
+                        DisplayName="UPS Share Master" Start="auto"
+                        Description="UPS Share service updates connected slaves with info about UPS events"
+                        Account="LocalSystem" ErrorControl="normal" />
+        <ServiceControl Id="StartService"  Name="UPSShare.Master" Start="install" Stop="both" Wait="yes" Remove="uninstall" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>
