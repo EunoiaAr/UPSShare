@@ -63,7 +63,11 @@ namespace UPSShare.Master
             }
             return base.OnPowerEvent(powerStatus);
         }
-
+        protected override void OnShutdown()
+        {
+            _log.Debug($"OnShutdown");
+            base.OnShutdown();
+        }
         IDisposable _webApi;
         ILog        _log    = LogManager.GetLogger(typeof(MasterService));
     }
