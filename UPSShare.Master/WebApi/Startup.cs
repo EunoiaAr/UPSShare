@@ -1,23 +1,25 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.WebSockets;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
+using log4net;
 using Microsoft.Owin;
 using Owin;
 
 namespace UPSShare.Master.WebApi
 {
-    using System.Net.WebSockets;
     // see: http://aspnet.codeplex.com/sourcecontrol/latest#Samples/Katana/WebSocketSample/WebSocketServer/Startup.cs
     using WebSocketAccept = Action<IDictionary<string, object>, Func<IDictionary<string, object>, Task>>;
     using WebSocketCloseAsync = Func<int, string, CancellationToken, Task>;
-    using WebSocketReceiveAsync = Func<ArraySegment<byte>, CancellationToken, Task<Tuple<int, bool, int>>>;
-    using WebSocketSendAsync = Func<ArraySegment<byte>, int, bool, CancellationToken, Task>;
+    using WebSocketSendAsync = Func<ArraySegment<byte>, WebSocketMessageType, bool, CancellationToken, Task>;
 
     public class Startup
     {
-
         // This code configures Web API. The Startup class is specified as a type
         // parameter in the WebApp.Start method.
         public void Configuration(IAppBuilder appBuilder)
@@ -32,11 +34,65 @@ namespace UPSShare.Master.WebApi
 
             appBuilder.UseWebApi(config);
             appBuilder.Use(UpgradeToWebSockets);
+            if (!ThreadPool.QueueUserWorkItem(ConsumeEventsProcess)) {
+                _log.Warn("Consumer Events Process could not be started");
+            }
+            _acceptedClients = new ConcurrentDictionary<string, IDictionary<string, object>>();
+        }
+
+        async void ConsumeEventsProcess(object state)
+        {
+            while (true) {
+                try {
+                    string message;
+
+                    if (MasterService.UpdatesQueue.TryDequeue(out message)) {
+                        await SendMessageToClients(message);
+                    }
+                } catch (Exception e) {
+                    _log.Warn(e);
+                }
+            }
+        }
+
+        async Task SendMessageToClients(string message)
+        {
+            foreach (var client in _acceptedClients.Keys.ToArray()) {
+                IDictionary<string, object> websocketContext;
+
+                // if still exists
+                if (_acceptedClients.TryGetValue(client, out websocketContext)) {
+                    var closeAsync      = (WebSocketCloseAsync) websocketContext["websocket.CloseAsync"];
+                    var callCancelled   = (CancellationToken)   websocketContext["websocket.CallCancelled"];
+                    object status;
+
+                    // check if it's not closed
+                    if (!websocketContext.TryGetValue("websocket.ClientCloseStatus", out status) || (int) status == 0) {
+                        var sendAsync       = (WebSocketSendAsync)  websocketContext["websocket.SendAsync"];
+                        var messageBytes    = Encoding.UTF8.GetBytes(message);
+
+                        // send the message
+                        await sendAsync(new ArraySegment<byte>(messageBytes, 0, messageBytes.Length), WebSocketMessageType.Text, true, callCancelled);
+                    } else {
+                        object clientCloseDescription;
+                        if (!websocketContext.TryGetValue("websocket.ClientCloseDescription", out clientCloseDescription)) {
+                            _log.Warn($"could not get close description for client '{client}' and status '{status}'");
+                        } else {
+                            _log.Debug($"Client ended connection with status {(WebSocketCloseStatus) status} and description {clientCloseDescription}. disconnecting client");
+                        }
+                        await closeAsync((int) status, (string) clientCloseDescription, callCancelled);
+                        _log.Debug($"client {client} disconnected");
+
+                        // remove it if closed
+                        _acceptedClients.TryRemove(client, out websocketContext);
+                    }
+                }
+            }
         }
 
         Task UpgradeToWebSockets(IOwinContext context, Func<Task> next)
         {
-            WebSocketAccept accept = context.Get<WebSocketAccept>("websocket.Accept");
+            var accept = context.Get<WebSocketAccept>("websocket.Accept");
             if (accept == null || context.Request.Path.Value != "/ws") {
                 // Not a websocket request
                 return next();
@@ -49,40 +105,25 @@ namespace UPSShare.Master.WebApi
 
         async Task WebSocketPushUPSShare(IDictionary<string, object> websocketContext)
         {
-            Console.WriteLine("client connected");
-            string clientKey = String.Empty;
-            try {
-                var webSocketsContext   = (HttpListenerWebSocketContext)    websocketContext["System.Net.WebSockets.WebSocketContext"];
-                clientKey               = webSocketsContext.SecWebSocketKey;
+            var clientKey           = string.Empty;
+            await Task.Run(() => {
+                try {
+                    _log.Debug("client connected");
+                    var webSocketsContext   = (HttpListenerWebSocketContext)    websocketContext["System.Net.WebSockets.WebSocketContext"];
+                    clientKey = webSocketsContext.SecWebSocketKey;
 
-                Console.WriteLine($"Client SecWebSocketKey = {clientKey}");
+                    _log.Debug($"Client SecWebSocketKey = {clientKey}");
+                    if (!_acceptedClients.TryAdd(clientKey, websocketContext)) {
+                        _log.Warn($"client '{clientKey}' could not be added to the accepted client dictionary");
+                    }
 
-                var sendAsync           = (WebSocketSendAsync)              websocketContext["websocket.SendAsync"];
-                var receiveAsync        = (WebSocketReceiveAsync)           websocketContext["websocket.ReceiveAsync"];
-                var closeAsync          = (WebSocketCloseAsync)             websocketContext["websocket.CloseAsync"];
-                var callCancelled       = (CancellationToken)               websocketContext["websocket.CallCancelled"];
-                var buffer              = new byte[1024];
-                var received            = await receiveAsync(new ArraySegment<byte>(buffer), callCancelled);
-                object status;
-
-                while (!websocketContext.TryGetValue("websocket.ClientCloseStatus", out status) || (int) status == 0) {
-                    // Echo anything we receive
-                    var type            = received.Item1;
-                    var endOfMessage    = received.Item2;
-                    var count           = received.Item3;
-
-                    await sendAsync(new ArraySegment<byte>(buffer, 0, count), type, endOfMessage, callCancelled);
-
-                    received = await receiveAsync(new ArraySegment<byte>(buffer), callCancelled);
+                } catch (Exception e) {
+                    _log.Warn($"client key = {clientKey} --> {e}");
                 }
-                object clientCloseDescription;
-                websocketContext.TryGetValue("websocket.ClientCloseDescription", out clientCloseDescription);
-                Console.WriteLine($"Client ended connection with status {(WebSocketCloseStatus) status} and description {clientCloseDescription}. disconnecting client");
-
-                await closeAsync((int) status, (string) clientCloseDescription, callCancelled);
-            } finally {
-                Console.WriteLine($"client {clientKey} disconnected");
-            }
+            });
         }
+
+        readonly    ILog                                                        _log    = LogManager.GetLogger(typeof(Startup));
+                    ConcurrentDictionary<string, IDictionary<string, object>>   _acceptedClients;
     }
 }

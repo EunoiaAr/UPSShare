@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Configuration;
 using System.ServiceProcess;
 using log4net;
@@ -14,19 +15,9 @@ namespace UPSShare.Master
             BaseAddress = ConfigurationManager.AppSettings["baseAddress"] ?? "http://*:5000";
         }
 
-        public string BaseAddress { get; private set; }
+        public          string                  BaseAddress { get; private set; }
 
-        protected override void OnStart(string[] args)
-        {
-            _log.Debug("Starting UPS Master ");
-            Start(args);
-        }
-
-        protected override void OnStop()
-        {
-            _webApi.Dispose();
-            _log.Debug("Stopping UPS Master ");
-        }
+        public static   ConcurrentQueue<string> UpdatesQueue { get { return _updatesQueue; } }
 
         internal void Start(string[] args)
         {
@@ -36,39 +27,37 @@ namespace UPSShare.Master
 
         }
 
+        protected override void OnStart(string[] args)
+        {
+            _log.Debug("Starting UPS Master");
+            Start(args);
+        }
+
+        protected override void OnStop()
+        {
+            _updatesQueue.Enqueue("OnStop");
+            _log.Debug("Stopping UPS Master");
+            _webApi.Dispose();
+        }
+
         protected override bool OnPowerEvent(PowerBroadcastStatus powerStatus)
         {
             _log.Debug($"OnPowerStatus '{powerStatus}'");
-            switch (powerStatus) {
-                case PowerBroadcastStatus.BatteryLow:
-                    break;
-                case PowerBroadcastStatus.OemEvent:
-                    break;
-                case PowerBroadcastStatus.PowerStatusChange:
-                    break;
-                case PowerBroadcastStatus.QuerySuspend:
-                    break;
-                case PowerBroadcastStatus.QuerySuspendFailed:
-                    break;
-                case PowerBroadcastStatus.ResumeAutomatic:
-                    break;
-                case PowerBroadcastStatus.ResumeCritical:
-                    break;
-                case PowerBroadcastStatus.ResumeSuspend:
-                    break;
-                case PowerBroadcastStatus.Suspend:
-                    break;
-                default:
-                    break;
-            }
+            _updatesQueue.Enqueue(powerStatus.ToString());
             return base.OnPowerEvent(powerStatus);
         }
+
         protected override void OnShutdown()
         {
-            _log.Debug($"OnShutdown");
+            _log.Debug(OnShutdownMessage);
+            _updatesQueue.Enqueue(OnShutdownMessage);
             base.OnShutdown();
         }
-        IDisposable _webApi;
-        ILog        _log    = LogManager.GetLogger(typeof(MasterService));
+
+        const       string                  OnShutdownMessage = "OnShutdown";
+        static
+        readonly    ConcurrentQueue<string> _updatesQueue   = new ConcurrentQueue<string>();
+        readonly    ILog                    _log            = LogManager.GetLogger(typeof(MasterService));
+                    IDisposable             _webApi;
     }
 }
