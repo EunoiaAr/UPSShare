@@ -3,7 +3,7 @@
      xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
   <?include Vars.wxi ?>
   <Product Id="*"
-           Name="$(var.ProductName)"
+           Name="$(var.ProductName) $(var.ProductVersion)"
            Codepage="utf-8"
            Language="1033"
            Version="$(var.ProductVersion)"
@@ -23,11 +23,16 @@
                       OnlyDetect="no"
                       Language="1033"
                       Maximum="$(var.ProductVersion)"
+                      IncludeMaximum="no"
                       Property="UPGRADEFOUND"/>
     </Upgrade>
-    <PropertyRef Id="WIX_IS_NETFRAMEWORK_452_OR_LATER_INSTALLED"/>
 
     <Media Id="1" Cabinet="$(var.SkuName).cab" EmbedCab="yes" />
+
+    <Property Id="APPNOREPAIR" Value="yes" Secure="yes" />
+    <Property Id="APPNOMODIFY" Value="yes" Secure="yes" />
+
+    <PropertyRef Id="WIX_IS_NETFRAMEWORK_452_OR_LATER_INSTALLED"/>
     <Condition Message="This application requires .NET Framework 4.5.2. Please install the .NET Framework then run this installer again.">
       <![CDATA[Installed OR WIX_IS_NETFRAMEWORK_452_OR_LATER_INSTALLED]]>
     </Condition>
@@ -39,7 +44,7 @@
       <ComponentGroupRef Id="UPSShare.Master" />
     </Feature>
     <Feature Id="UPSShareSlave"
-             Title="UPS Share Slave Service" Level="2">
+             Title="UPS Share Slave Service" Level="50">
       <ComponentGroupRef Id="UPSShare.Slave" />
     </Feature>
     <UIRef Id="UPSShare.UI.Mondo" />
