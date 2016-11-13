@@ -6,12 +6,25 @@
            Name="$(var.ProductName)"
            Codepage="utf-8"
            Language="1033"
-           Version="$(fun.AutoVersion(1.0))"
+           Version="$(var.ProductVersion)"
            Manufacturer="$(var.Manufacturer)"
            UpgradeCode="$(var.UpgradeCode)">
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <Upgrade Id="$(var.UpgradeCode)">
+      <UpgradeVersion Minimum="$(var.ProductVersion)"
+                      IncludeMinimum="no"
+                      OnlyDetect="yes"
+                      Language="1033"
+                      Property="NEWPRODUCTFOUND" />
+      <UpgradeVersion Minimum="$(var.RTMProductVersion)"
+                      IncludeMinimum="yes"
+                      OnlyDetect="no"
+                      Language="1033"
+                      Maximum="$(var.ProductVersion)"
+                      Property="UPGRADEFOUND"/>
+    </Upgrade>
     <MediaTemplate />
     <PropertyRef Id="WIX_IS_NETFRAMEWORK_452_OR_LATER_INSTALLED"/>
 

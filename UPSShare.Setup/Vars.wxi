@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include>
   <?define ProductName="UPSShare" ?>
+  <?define ProductVersion=$(fun.AutoVersion(1.0))?>
   <?define UpgradeCode="f614d955-e5f9-45fc-b0f7-1078bb4689f1" ?>
   <?define Manufacturer="Eugenio Miró" ?>
+  <?define RTMProductVersion="1.0.0"?>
 </Include>
