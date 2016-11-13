@@ -25,9 +25,9 @@
                       Maximum="$(var.ProductVersion)"
                       Property="UPGRADEFOUND"/>
     </Upgrade>
-    <MediaTemplate />
     <PropertyRef Id="WIX_IS_NETFRAMEWORK_452_OR_LATER_INSTALLED"/>
 
+    <Media Id="1" Cabinet="$(var.SkuName).cab" EmbedCab="yes" />
     <Condition Message="This application requires .NET Framework 4.5.2. Please install the .NET Framework then run this installer again.">
       <![CDATA[Installed OR WIX_IS_NETFRAMEWORK_452_OR_LATER_INSTALLED]]>
     </Condition>
