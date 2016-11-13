@@ -13,6 +13,7 @@ Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "UPSShare.Bootstrapper", "UP
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{C6609B11-98D3-46D3-BD9D-9739F98A4DEE}"
 	ProjectSection(SolutionItems) = preProject
+		LICENSE.rtf = LICENSE.rtf
 		LICENSE.txt = LICENSE.txt
 		README.md = README.md
 	EndProjectSection

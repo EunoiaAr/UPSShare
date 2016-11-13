@@ -19,6 +19,8 @@
       <![CDATA[Installed OR WIX_IS_NETFRAMEWORK_452_OR_LATER_INSTALLED]]>
     </Condition>
 
+    <WixVariable Id="WixUILicenseRtf" Value="..\LICENSE.RTF" />
+
     <Feature Id="UPSShareMaster"
              Title="UPS Share Master Service" Level="1">
       <ComponentGroupRef Id="UPSShare.Master" />
