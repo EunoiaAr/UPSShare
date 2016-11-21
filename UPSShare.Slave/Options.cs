@@ -1,7 +1,7 @@
 ﻿using CommandLine;
 using CommandLine.Text;
 
-namespace UPSShare.Master
+namespace UPSShare.Slave
 {
     public class Options
     {
@@ -14,5 +14,4 @@ namespace UPSShare.Master
             return HelpText.AutoBuild(this, (HelpText current) => HelpText.DefaultParsingErrorsHandler(this, current));
         }
     }
-
 }

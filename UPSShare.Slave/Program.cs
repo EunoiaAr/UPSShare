@@ -1,4 +1,5 @@
-﻿using System.ServiceProcess;
+﻿using System;
+using System.ServiceProcess;
 
 namespace UPSShare.Slave
 {
@@ -7,12 +8,25 @@ namespace UPSShare.Slave
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
-        static void Main()
+        static void Main(string[] args)
         {
-            ServiceBase[] ServicesToRun = new ServiceBase[] {
-                new SlaveService()
-            };
-            ServiceBase.Run(ServicesToRun);
+            var options = new Options();
+            var service = new SlaveService();
+            var isValid = CommandLine.Parser.Default.ParseArgumentsStrict(args, options);
+            if (!isValid) return;
+
+            if (!options.AsCommand) {
+                var servicesToRun = new ServiceBase[] {
+                    service
+                };
+                ServiceBase.Run(servicesToRun);
+            } else {
+                service.Start(args);
+                service.RunSlave().ConfigureAwait(false);
+                Console.WriteLine("Press <ENTER> to finish");
+                Console.ReadLine();
+                service.Stop();
+            }
         }
     }
 }

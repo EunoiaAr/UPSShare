@@ -4,6 +4,7 @@ using System.ServiceProcess;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using log4net;
 
 namespace UPSShare.Slave
 {
@@ -20,12 +21,16 @@ namespace UPSShare.Slave
             RunSlave().ConfigureAwait(false);
         }
 
+        public void Start(string[] args)
+        {
+            OnStart(args);
+        }
         protected override void OnStop()
         {
             _stopEvent.Set();
         }
 
-        async Task RunSlave()
+        public async Task RunSlave()
         {
             var url         = "ws://localhost:5000/ws";
             var disconnect  = false;
@@ -33,10 +38,12 @@ namespace UPSShare.Slave
             while (!_stopEvent.WaitOne(1)) {
                 var websocket   = new ClientWebSocket();
                 try {
+                    _log.Debug($"connecting to {url}");
                     await websocket.ConnectAsync(new Uri(url), CancellationToken.None);
 
                     while (!_stopEvent.WaitOne(1) && !disconnect) {
                         var message = await ReceiveMessage(websocket);
+
                         switch (message) {
                             case "master shutdown":
                                 disconnect = true;
@@ -48,6 +55,8 @@ namespace UPSShare.Slave
                                 break;
                         }
                     }
+                } catch (Exception e) {
+                    _log.Warn(e);
                 } finally {
                     if (websocket != null && websocket.State == WebSocketState.Open)
                         await websocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Bye!", CancellationToken.None);
@@ -76,6 +85,7 @@ namespace UPSShare.Slave
             }
         }
 
-        ManualResetEvent _stopEvent;
+        ManualResetEvent    _stopEvent;
+        ILog                _log        = LogManager.GetLogger(nameof(SlaveService));
     }
 }

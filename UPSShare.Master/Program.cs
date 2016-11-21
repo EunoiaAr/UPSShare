@@ -13,7 +13,7 @@ namespace UPSShare.Master
         {
             var options = new Options();
             if (!Parser.Default.ParseArguments(args, options)) {
-                Console.WriteLine("error command line");
+                return;
             }
             var service = new MasterService();
             if (!options.AsCommand) {
