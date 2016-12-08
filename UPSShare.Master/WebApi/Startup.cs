@@ -16,7 +16,7 @@ namespace UPSShare.Master.WebApi
     // see: http://aspnet.codeplex.com/sourcecontrol/latest#Samples/Katana/WebSocketSample/WebSocketServer/Startup.cs
     using WebSocketAccept = Action<IDictionary<string, object>, Func<IDictionary<string, object>, Task>>;
     using WebSocketCloseAsync = Func<int, string, CancellationToken, Task>;
-    using WebSocketSendAsync = Func<ArraySegment<byte>, WebSocketMessageType, bool, CancellationToken, Task>;
+    using WebSocketSendAsync = Func<ArraySegment<byte>, int, bool, CancellationToken, Task>;
 
     public class Startup
     {
@@ -72,7 +72,7 @@ namespace UPSShare.Master.WebApi
                         var messageBytes    = Encoding.UTF8.GetBytes(message);
 
                         // send the message
-                        await sendAsync(new ArraySegment<byte>(messageBytes, 0, messageBytes.Length), WebSocketMessageType.Text, true, callCancelled);
+                        await sendAsync(new ArraySegment<byte>(messageBytes, 0, messageBytes.Length), (int) WebSocketMessageType.Text, true, callCancelled);
                     } else {
                         object clientCloseDescription;
                         if (!websocketContext.TryGetValue("websocket.ClientCloseDescription", out clientCloseDescription)) {
