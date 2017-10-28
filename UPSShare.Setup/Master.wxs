@@ -20,7 +20,7 @@
                         DisplayName="UPS Share Master" Start="auto"
                         Description="UPS Share service updates connected slaves with info about UPS events"
                         Account="LocalSystem" ErrorControl="normal" />
-        <ServiceControl Id="StartService"  Name="UPSShare.Master" Start="install" Stop="both" Wait="yes" Remove="uninstall" />
+        <ServiceControl Id="StartMasterService"  Name="UPSShare.Master" Start="install" Stop="both" Wait="yes" Remove="uninstall" />
       </Component>
     </ComponentGroup>
   </Fragment>

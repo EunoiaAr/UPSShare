@@ -5,6 +5,11 @@
       <Component Id="UPSShare.Slave.Service" Guid="{BDF1BD4F-5DE0-44E8-B099-65E871AA8144}">
         <File Id="UPSShareSlaveExe"     Name="UPSShare.Slave.exe"         Source="$(var.UPSShare.Slave.TargetPath)"   KeyPath="yes" Vital="yes" DiskId="1" />
         <File Id="UPSShareSlaveConfig"  Name="UPSShare.Slave.exe.config"  Source="$(var.UPSShare.Slave.TargetDir)$(var.UPSShare.Slave.TargetFileName).config" KeyPath="no" Vital="yes" DiskId="1" />
+        <ServiceInstall Id="InstallSlaveService" Type="ownProcess" Vital="yes" Name="UPSShare.Slave"
+                        DisplayName="UPS Share Slave" Start="auto"
+                        Description="UPS Share Slave Service connects to master service to receive info about UPS events"
+                        Account="LocalSystem" ErrorControl="normal" />
+        <ServiceControl Id="StartSlaveService"  Name="UPSShare.Slave" Start="install" Stop="both" Wait="yes" Remove="uninstall" />
       </Component>
     </ComponentGroup>
   </Fragment>
