@@ -48,6 +48,8 @@ namespace UPSShare.Master.WebApi
 
                     if (MasterService.UpdatesQueue.TryDequeue(out message)) {
                         await SendMessageToClients(message);
+                    } else {
+                        await Task.Delay(10);
                     }
                 } catch (Exception e) {
                     _log.Warn(e);
