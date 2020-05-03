@@ -82,6 +82,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Win32API\BATTERY_REPORTING_SCALE.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="SlaveService.cs">
       <SubType>Component</SubType>
@@ -91,7 +92,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Win32API.cs" />
+    <Compile Include="Win32API\SYSTEM_POWER_CAPABILITIES.cs" />
+    <Compile Include="Win32API\SYSTEM_POWER_STATE.cs" />
+    <Compile Include="Win32API\Win32API.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
