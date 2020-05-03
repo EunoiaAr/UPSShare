@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Configuration;
+using System.Net;
+using System.Reflection;
 using System.ServiceProcess;
 using log4net;
 using Microsoft.Owin.Hosting;
@@ -12,7 +14,7 @@ namespace UPSShare.Master
         public MasterService()
         {
             InitializeComponent();
-            BaseAddress = ConfigurationManager.AppSettings["baseAddress"] ?? "http://*:5000";
+            BaseAddress = ConfigurationManager.AppSettings["baseAddress"] ?? "http://*:5000/";
         }
 
         public string BaseAddress { get; private set; }
@@ -22,8 +24,18 @@ namespace UPSShare.Master
         internal void Start(string[] args)
         {
             // see: http://www.asp.net/web-api/overview/hosting-aspnet-web-api/use-owin-to-self-host-web-api
-            _webApi = WebApp.Start<WebApi.Startup>(url: BaseAddress);
-            _log.Debug($"Starting WebAPi on '{BaseAddress}'");
+            try {
+                _log.Debug($"Starting server at {BaseAddress}");
+                _webApi = WebApp.Start<WebApi.Startup>(url: BaseAddress);
+            } catch (TargetInvocationException tiex) when (tiex.InnerException is HttpListenerException &&
+                                                           tiex.InnerException.Message == "Access is denied") {
+                var message = $@"
+Make BaseAccess ({BaseAddress}) available to the impersonating user ({Environment.UserDomainName}\{Environment.UserName})
+   see: https://serverfault.com/a/811249/544";
+                _log.Error(message);
+                throw new ApplicationException(message);
+            }
+            _log.Debug($"Started WebAPi on '{BaseAddress}'");
 
         }
 
