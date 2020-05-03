@@ -10,3 +10,5 @@ the master role and those other boxes attached to the same UPS but with no commu
 
 Master role then publish events on UPS behavior and Slave role subscribes to the master watching for those events and take action before 
 power is down.
+
+![Network Schema](Documents/Network%20Schema.jpg "Network Schema")
