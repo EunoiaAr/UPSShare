@@ -32,11 +32,11 @@ namespace UPSShare.Slave
 
         public async Task RunSlave()
         {
-            var url         = "ws://localhost:5000/ws";
-            var disconnect  = false;
+            var url = "ws://localhost:5000/ws";
+            var disconnect = false;
 
             while (!_stopEvent.WaitOne(1)) {
-                var websocket   = new ClientWebSocket();
+                var websocket = new ClientWebSocket();
                 try {
                     _log.Debug($"connecting to {url}");
                     await websocket.ConnectAsync(new Uri(url), CancellationToken.None);
@@ -58,21 +58,22 @@ namespace UPSShare.Slave
                 } catch (Exception e) {
                     _log.Warn(e);
                 } finally {
-                    if (websocket != null && websocket.State == WebSocketState.Open)
+                    if (websocket != null && websocket.State == WebSocketState.Open) {
                         await websocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Bye!", CancellationToken.None);
+                    }
                 }
             }
         }
 
-        private void HibernateOrShutdown()
+        void HibernateOrShutdown()
         {
             // hibernate if enabled otherwise shutdown immediately!!!
         }
 
         async Task<string> ReceiveMessage(ClientWebSocket socket)
         {
-            byte[] incomingData = new byte[1024];
-            WebSocketReceiveResult result = await socket.ReceiveAsync(new ArraySegment<byte>(incomingData), CancellationToken.None);
+            var incomingData = new byte[1024];
+            var result = await socket.ReceiveAsync(new ArraySegment<byte>(incomingData), CancellationToken.None);
 
             var receivedMessage = string.Empty;
             if (result.CloseStatus.HasValue) {
@@ -85,7 +86,7 @@ namespace UPSShare.Slave
             }
         }
 
-        ManualResetEvent    _stopEvent;
-        ILog                _log        = LogManager.GetLogger(nameof(SlaveService));
+        ManualResetEvent _stopEvent;
+        readonly ILog _log = LogManager.GetLogger(nameof(SlaveService));
     }
 }

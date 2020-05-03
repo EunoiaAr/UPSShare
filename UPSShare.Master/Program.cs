@@ -4,12 +4,12 @@ using CommandLine;
 
 namespace UPSShare.Master
 {
-    static class Program
+    public static class Program
     {
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             var options = new Options();
             if (!Parser.Default.ParseArguments(args, options)) {
@@ -17,7 +17,7 @@ namespace UPSShare.Master
             }
             var service = new MasterService();
             if (!options.AsCommand) {
-                ServiceBase[] ServicesToRun = new ServiceBase[] {
+                var ServicesToRun = new ServiceBase[] {
                     service
                 };
                 ServiceBase.Run(ServicesToRun);

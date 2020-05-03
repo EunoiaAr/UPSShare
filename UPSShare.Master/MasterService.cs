@@ -15,9 +15,9 @@ namespace UPSShare.Master
             BaseAddress = ConfigurationManager.AppSettings["baseAddress"] ?? "http://*:5000";
         }
 
-        public          string                  BaseAddress { get; private set; }
+        public string BaseAddress { get; private set; }
 
-        public static   ConcurrentQueue<string> UpdatesQueue { get { return _updatesQueue; } }
+        public static ConcurrentQueue<string> UpdatesQueue => _updatesQueue;
 
         internal void Start(string[] args)
         {
@@ -54,10 +54,10 @@ namespace UPSShare.Master
             base.OnShutdown();
         }
 
-        const       string                  OnShutdownMessage = "OnShutdown";
+        const string OnShutdownMessage = "OnShutdown";
         static
-        readonly    ConcurrentQueue<string> _updatesQueue   = new ConcurrentQueue<string>();
-        readonly    ILog                    _log            = LogManager.GetLogger(typeof(MasterService));
-                    IDisposable             _webApi;
+        readonly ConcurrentQueue<string> _updatesQueue = new ConcurrentQueue<string>();
+        readonly ILog _log = LogManager.GetLogger(typeof(MasterService));
+        IDisposable _webApi;
     }
 }

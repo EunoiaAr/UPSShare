@@ -13,7 +13,9 @@ namespace UPSShare.Slave
             var options = new Options();
             var service = new SlaveService();
             var isValid = CommandLine.Parser.Default.ParseArgumentsStrict(args, options);
-            if (!isValid) return;
+            if (!isValid) {
+                return;
+            }
 
             if (!options.AsCommand) {
                 var servicesToRun = new ServiceBase[] {

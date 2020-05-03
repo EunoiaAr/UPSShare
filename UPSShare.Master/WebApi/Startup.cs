@@ -25,7 +25,7 @@ namespace UPSShare.Master.WebApi
         public void Configuration(IAppBuilder appBuilder)
         {
             // Configure Web API for self-host.
-            HttpConfiguration config = new HttpConfiguration();
+            var config = new HttpConfiguration();
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}/{id}",
@@ -44,9 +44,8 @@ namespace UPSShare.Master.WebApi
         {
             while (true) {
                 try {
-                    string message;
 
-                    if (MasterService.UpdatesQueue.TryDequeue(out message)) {
+                    if (MasterService.UpdatesQueue.TryDequeue(out var message)) {
                         await SendMessageToClients(message);
                     } else {
                         await Task.Delay(10);
@@ -60,24 +59,21 @@ namespace UPSShare.Master.WebApi
         async Task SendMessageToClients(string message)
         {
             foreach (var client in _acceptedClients.Keys.ToArray()) {
-                IDictionary<string, object> websocketContext;
 
                 // if still exists
-                if (_acceptedClients.TryGetValue(client, out websocketContext)) {
-                    var closeAsync      = (WebSocketCloseAsync) websocketContext["websocket.CloseAsync"];
-                    var callCancelled   = (CancellationToken)   websocketContext["websocket.CallCancelled"];
-                    object status;
+                if (_acceptedClients.TryGetValue(client, out var websocketContext)) {
+                    var closeAsync = (WebSocketCloseAsync) websocketContext["websocket.CloseAsync"];
+                    var callCancelled = (CancellationToken) websocketContext["websocket.CallCancelled"];
 
                     // check if it's not closed
-                    if (!websocketContext.TryGetValue("websocket.ClientCloseStatus", out status) || (int) status == 0) {
-                        var sendAsync       = (WebSocketSendAsync)  websocketContext["websocket.SendAsync"];
-                        var messageBytes    = Encoding.UTF8.GetBytes(message);
+                    if (!websocketContext.TryGetValue("websocket.ClientCloseStatus", out var status) || (int) status == 0) {
+                        var sendAsync = (WebSocketSendAsync) websocketContext["websocket.SendAsync"];
+                        var messageBytes = Encoding.UTF8.GetBytes(message);
 
                         // send the message
                         await sendAsync(new ArraySegment<byte>(messageBytes, 0, messageBytes.Length), (int) WebSocketMessageType.Text, true, callCancelled);
                     } else {
-                        object clientCloseDescription;
-                        if (!websocketContext.TryGetValue("websocket.ClientCloseDescription", out clientCloseDescription)) {
+                        if (!websocketContext.TryGetValue("websocket.ClientCloseDescription", out var clientCloseDescription)) {
                             _log.Warn($"could not get close description for client '{client}' and status '{status}'");
                         } else {
                             _log.Debug($"Client ended connection with status {(WebSocketCloseStatus) status} and description {clientCloseDescription}. disconnecting client");
@@ -107,11 +103,11 @@ namespace UPSShare.Master.WebApi
 
         async Task WebSocketPushUPSShare(IDictionary<string, object> websocketContext)
         {
-            var clientKey           = string.Empty;
+            var clientKey = string.Empty;
             await Task.Run(() => {
                 try {
                     _log.Debug("client connected");
-                    var webSocketsContext   = (HttpListenerWebSocketContext)    websocketContext["System.Net.WebSockets.WebSocketContext"];
+                    var webSocketsContext = (HttpListenerWebSocketContext) websocketContext["System.Net.WebSockets.WebSocketContext"];
                     clientKey = webSocketsContext.SecWebSocketKey;
 
                     _log.Debug($"Client SecWebSocketKey = {clientKey}");
@@ -125,7 +121,7 @@ namespace UPSShare.Master.WebApi
             });
         }
 
-        readonly    ILog                                                        _log    = LogManager.GetLogger(typeof(Startup));
-                    ConcurrentDictionary<string, IDictionary<string, object>>   _acceptedClients;
+        readonly ILog _log = LogManager.GetLogger(typeof(Startup));
+        ConcurrentDictionary<string, IDictionary<string, object>> _acceptedClients;
     }
 }
