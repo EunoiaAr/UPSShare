@@ -21,6 +21,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C07E43FA-0705-4196-9007-C3F39C95E947}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		addurlacl.cmd = addurlacl.cmd
 	EndProjectSection
 EndProject
 Global

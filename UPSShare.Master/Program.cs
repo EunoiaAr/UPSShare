@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ServiceProcess;
 using CommandLine;
+using log4net.Config;
 
 namespace UPSShare.Master
 {
@@ -22,6 +23,7 @@ namespace UPSShare.Master
                 };
                 ServiceBase.Run(ServicesToRun);
             } else {
+                BasicConfigurator.Configure();
                 service.Start(null);
                 Console.WriteLine("Press <ENTER> to finish");
                 Console.ReadLine();
